@@ -9,8 +9,6 @@ import employeesRoutes from './routes/employees.routes.js'
 import productsRoutes from './routes/products.routes.js'
 import ordersRoutes from './routes/orders.routes.js'
 
-import {} from './config.js'
-
 app.use(express.json());
 app.use(morgan('dev'));
 
