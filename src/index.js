@@ -12,14 +12,14 @@ import ordersRoutes from './routes/orders.routes.js'
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.use('/', (req, res) => {
-	res.send('Prueba de api con ORM prisma usando postgresql');
-})
-
 app.use('/customers', customersRoutes);
 app.use('/employees', employeesRoutes);
 app.use('/products', productsRoutes);
 app.use('/orders', ordersRoutes);
+
+app.use('/', (req, res) => {
+	res.send('Prueba de api con ORM prisma usando postgresql');
+})
 
 app.listen(port, () => {
 	console.log(`Escuchando en el puerto: ${port}`);
