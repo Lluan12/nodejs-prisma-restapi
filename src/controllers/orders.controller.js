@@ -4,8 +4,7 @@ import { getEmployee } from "./employees.controller.js";
 
 export const getOrders = async (req, res) => {
 	try {
-		const orders = await prisma.order.findMany({
-		});
+		const orders = await prisma.order.findMany({});
 		res.json(orders);
 	} catch (error) {
 		res.status(500).json({ message: "Order not found", error });
@@ -25,51 +24,52 @@ export const getOrder = async (req, res) => {
 };
 
 export const createOrder = async (req, res) => {
-	const { employeeId, customerId, products } = req.body
+	const { employeeId, customerId, products } = req.body;
 	console.log(employeeId);
-	console.log(customerId)
-	console.log(products)
+	console.log(customerId);
+	console.log(products);
 	try {
-
-		products.forEach(async product => {
+		products.forEach(async (product) => {
 			const currentProduct = await prisma.product.findUnique({
 				where: { id: product.productId },
 				select: {
 					stock: true,
-					title: true
-				}
-			})
-			if(currentProduct.stock < product.quantity) 
-				throw new Error("Stock insufieciente de: " + currentProduct.title)
-		})
+					title: true,
+				},
+			});
+			if (currentProduct.stock < product.quantity)
+				throw new Error(
+					"Stock insufieciente de: " + currentProduct.title
+				);
+		});
 
-		products.forEach(async product => {
+		products.forEach(async (product) => {
 			await prisma.product.update({
 				where: { id: product.productId },
 				data: {
 					stock: {
-						decrement: product.quantity
-					}
-				}
-			})
-		})
+						decrement: product.quantity,
+					},
+				},
+			});
+		});
 
 		const newOrder = await prisma.order.create({
-			data:{
+			data: {
 				employeeId,
 				customerId,
 				orderProduct: {
-					create: products.map(product => ({
+					create: products.map((product) => ({
 						product: {
 							connect: {
 								id: product.productId,
-							}
+							},
 						},
-						quantity: product.quantity, 
-					}))
-				}
-			}
-		})
+						quantity: product.quantity,
+					})),
+				},
+			},
+		});
 		res.json(newOrder);
 	} catch (error) {
 		res.status(500).json({ message: "Order not created", error });
