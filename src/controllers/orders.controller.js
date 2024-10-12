@@ -37,11 +37,20 @@ export const createOrder = async (req, res) => {
 				orderProduct: {
 					create: products.map(product => ({
 						product: {
+							update: {
+								where: { id: product.productId },
+								data: {
+									stock: {
+										decrement: product.quantity
+									}
+								}
+							},
 							connect: {
 								id: product.productId,
 							},
+							
 						},
-						quantity: product.quantity, // Relacionar producto con su cantidad en la misma iteración
+						quantity: product.quantity, 
 					}))
 				}
 			}
