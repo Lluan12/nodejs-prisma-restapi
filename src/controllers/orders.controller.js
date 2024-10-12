@@ -30,6 +30,30 @@ export const createOrder = async (req, res) => {
 	console.log(customerId)
 	console.log(products)
 	try {
+
+		products.forEach(async product => {
+			const currentProduct = await prisma.product.findUnique({
+				where: { id: product.productId },
+				select: {
+					stock: true,
+					title: true
+				}
+			})
+			if(currentProduct.stock < product.quantity) 
+				throw new Error("Stock insufieciente de: " + currentProduct.title)
+		})
+
+		products.forEach(async product => {
+			await prisma.product.update({
+				where: { id: product.productId },
+				data: {
+					stock: {
+						decrement: product.quantity
+					}
+				}
+			})
+		})
+
 		const newOrder = await prisma.order.create({
 			data:{
 				employeeId,
@@ -37,18 +61,9 @@ export const createOrder = async (req, res) => {
 				orderProduct: {
 					create: products.map(product => ({
 						product: {
-							update: {
-								where: { id: product.productId },
-								data: {
-									stock: {
-										decrement: product.quantity
-									}
-								}
-							},
 							connect: {
 								id: product.productId,
-							},
-							
+							}
 						},
 						quantity: product.quantity, 
 					}))
