@@ -14,17 +14,17 @@ datasource db {
 }
 
 model Employee {
-  id     Int    @id @default(autoincrement())
+  id     Int     @id @default(autoincrement())
   name   String
-  salary String
-  order  Order?
+  salary Int
+  order  Order[]
 }
 
 model Customer {
-  id    Int    @id @default(autoincrement())
+  id    Int     @id @default(autoincrement())
   name  String
   age   Int
-  order Order?
+  order Order[]
 }
 
 model Product {
@@ -37,18 +37,20 @@ model Product {
 
 model Order {
   id           Int            @id @default(autoincrement())
-  date         DateTime
+  date         DateTime       @default(now())
   employee     Employee       @relation(fields: [employeeId], references: [id])
-  employeeId   Int            @unique
+  employeeId   Int
   customer     Customer       @relation(fields: [customerId], references: [id])
-  customerId   Int            @unique
+  customerId   Int
   orderProduct OrderProduct[]
 }
 
 model OrderProduct {
   order     Order   @relation(fields: [orderId], references: [id])
-  orderId   Int     @unique
+  orderId   Int
   product   Product @relation(fields: [productId], references: [id])
-  productId Int     @unique
-  stock     Int
+  productId Int
+  quantity  Int
+
+  @@id([orderId, productId])
 }
