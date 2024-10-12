@@ -1,6 +1,4 @@
-import { connect } from "http2";
 import prisma from "../db/connection.js";
-import { getEmployee } from "./employees.controller.js";
 
 export const getOrders = async (req, res) => {
 	try {
